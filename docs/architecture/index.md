@@ -1,17 +1,16 @@
-# AI Soccer Betting Advisor: Fullstack Architecture Document v1.0
+# AI Soccer Betting Advisor Brownfield Enhancement Architecture
 
 ## Sections
 
 - [Introduction](./introduction.md)
-- [High Level Architecture](./high-level-architecture.md)
-- [Tech Stack](./tech-stack.md)
-- [Data Models](./data-models.md)
-- [API Specification](./api-specification.md)
-- [Components](./components.md)
-- [External APIs](./external-apis.md)
-- [Core Workflows](./core-workflows.md)
-- [Database Schema](./database-schema.md)
-- [Frontend Architecture](./frontend-architecture.md)
-- [Backend Architecture](./backend-architecture.md)
-- [Unified Project Structure](./unified-project-structure.md)
-- [Development Workflow](./development-workflow.md)
+- [Existing Project Analysis](./existing-project-analysis.md)
+- [Change Log](./change-log.md)
+- [Enhancement Scope and Integration Strategy](./enhancement-scope-and-integration-strategy.md)
+- [Tech Stack Alignment](./tech-stack-alignment.md)
+- [Data Models and Schema Changes](./data-models-and-schema-changes.md)
+- [Component Architecture](./component-architecture.md)
+- [API Design and Integration](./api-design-and-integration.md)
+- [Source Tree Integration](./source-tree-integration.md)
+- [Infrastructure and Deployment Integration](./infrastructure-and-deployment-integration.md)
+- [Coding Standards and Conventions](./coding-standards-and-conventions.md)
+- [Testing Strategy](./testing-strategy.md)

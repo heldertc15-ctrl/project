@@ -1,27 +1,21 @@
 # Requirements
 
-## Functional Requirements
+## Functional
 
-FR1: The system must fetch a list of upcoming soccer matches from a free sports API.
+**FR1:** The system shall fetch and display all available soccer matches from the SportsDB API, removing the current limitation of only showing three.
 
-FR2: The system must display the list of matches to the user, allowing them to select one.
+**FR2:** The application must include a new, distinct Dashboard page accessible from the main navigation.
 
-FR3: After a match is selected, the system must present the user with three risk level options: Low, Medium, and High.
+**FR3:** A theme-switching mechanism (e.g., a toggle button) shall be implemented that allows users to select between a Light Mode and a Dark Mode. The chosen theme must persist for the user across sessions.
 
-FR4: Upon user selection of a match and a risk level, the system must initiate an AI analysis process.
+**FR4:** The AI betting advisor's integration point shall be reviewed and prepared for future enhancements.
 
-FR5: The AI engine must analyze publicly available web data to determine an optimal bet type for the given match and risk profile.
+## Non-Functional
 
-FR6: The AI engine must generate a concise, single-sentence rationale explaining its betting suggestion.
+**NFR1:** The overall UI design shall be updated to feel more "familiar" and less "naked," using common layout patterns and providing a richer visual experience.
 
-FR7: The system must display the final bet suggestion and its rationale to the user.
+**NFR2:** The application must maintain a responsive layout, ensuring usability on common desktop, tablet, and mobile screen sizes.
 
-## Non-Functional Requirements
+**NFR3:** The implementation of new features should not negatively impact the existing application's load time or performance.
 
-NFR1: The entire application must be able to run on a user's local machine.
-
-NFR2: The AI analysis process should complete and display results in under 15 seconds.
-
-NFR3: The user interface must be intuitive and designed for beginners.
-
-NFR4: All technologies and APIs used must be free of charge for the prototype.
+**NFR4:** The styling for new components must be consistent with the chosen primary styling system (either Tailwind CSS or Styled Components) to reduce technical debt.

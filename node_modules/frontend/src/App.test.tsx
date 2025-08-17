@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import App from './App';
 import { apiClient } from './services/apiClient';
 
@@ -219,11 +220,11 @@ describe('App - Prediction Result Display', () => {
     });
 
     // Check for responsive classes
-    const container = screen.getByText('Prediction Result').closest('.bg-white');
+    const container = screen.getByText('Prediction Result').closest('.bg-theme-surface');
     expect(container).toHaveClass('rounded-xl', 'shadow-xl');
     
     const headerSection = screen.getByText('Prediction Result').closest('.bg-gradient-to-r');
-    expect(headerSection).toHaveClass('from-blue-600', 'to-blue-700');
+    expect(headerSection).toHaveClass('from-theme-primary', 'to-theme-primary-hover');
   });
 
   it('displays all required contextual information', async () => {
@@ -262,5 +263,61 @@ describe('App - Prediction Result Display', () => {
       minute: '2-digit'
     });
     expect(screen.getByText(expectedDate)).toBeInTheDocument();
+  });
+});
+
+// Since App already contains a Router, we'll test individual pages
+describe('App - Individual Page Components', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    (apiClient.getMatches as any).mockResolvedValue(mockMatches);
+  });
+
+  it('ThemedApp component renders with correct structure', () => {
+    render(<App />);
+
+    // Check that App renders with proper theme structure
+    expect(screen.getByText('BMAD Prediction Engine')).toBeInTheDocument();
+    expect(screen.getByRole('navigation')).toBeInTheDocument();
+    
+    // Theme should be applied to document
+    expect(document.documentElement).toHaveAttribute('data-theme');
+  });
+
+  it('maintains consistent navigation across app', () => {
+    render(<App />);
+
+    // Navbar should be present
+    expect(screen.getByText('BMAD Prediction Engine')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /home/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /dashboard/i })).toBeInTheDocument();
+  });
+
+  it('has proper Router configuration', () => {
+    render(<App />);
+
+    // App should contain Router elements
+    const navigation = screen.getByRole('navigation');
+    expect(navigation).toBeInTheDocument();
+    
+    // Navigation links should be present
+    const links = screen.getAllByRole('link');
+    expect(links.length).toBeGreaterThan(0);
+  });
+
+  it('applies consistent theme structure', () => {
+    render(<App />);
+
+    // Theme should be consistently applied
+    const mainContainer = screen.getByRole('navigation').closest('.min-h-screen');
+    expect(mainContainer).toHaveClass('bg-theme-background');
+  });
+
+  it('theme switcher is accessible', () => {
+    render(<App />);
+
+    const themeSwitcher = screen.getByRole('switch');
+    expect(themeSwitcher).toBeInTheDocument();
+    expect(themeSwitcher).toHaveAttribute('aria-label');
   });
 });

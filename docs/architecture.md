@@ -1,311 +1,302 @@
-AI Soccer Betting Advisor: Fullstack Architecture Document v1.0
-1. Introduction
-This document outlines the complete fullstack architecture for the AI Soccer Betting Advisor, including backend systems, frontend implementation, and their integration. It serves as the single source of truth for AI-driven development, ensuring consistency across the entire technology stack.
+AI Soccer Betting Advisor Brownfield Enhancement Architecture
+Introduction
+This document outlines the architectural approach for enhancing the AI Soccer Betting Advisor with a comprehensive UI/UX modernization, a new dashboard, and a core data-fetching fix. Its primary goal is to serve as the guiding architectural blueprint for development, ensuring seamless integration with the existing system.
 
-Starter Template or Existing Project
-To accelerate development and ensure a robust foundation, we will use the following:
+Relationship to Existing Architecture:
+This document supplements the existing project architecture (as captured in the initial analysis) by defining how new components and patterns will integrate with the current systems.
 
-Frontend: Use Vite with a React + TypeScript template. This provides an extremely fast development server and an optimized build process out of the box.
+Existing Project Analysis
+Current Project State: The project is a client-side React SPA built with Create React App. It functions as an AI sports betting advisor by fetching data from the SportsDB API.
 
-Backend: Use a standard FastAPI project generator. This will create a logical structure for our Python backend, ready for implementing API endpoints and the core AI logic.
+Available Documentation: The primary source of truth for the existing system is the docs/brownfield-architecture.md document generated during the initial analysis phase.
 
-Core Principles
-
-Testability: The architecture must support testing the output of each completed story in isolation. This is achieved through a strong separation of concerns.
-
-Developer Experience: The project must be simple to run and review. A one-command startup (npm run dev) is required for development, and a build + start process will be used to create stable versions for review after each story.
+Identified Constraints: The architecture must respect the existing React framework. A key consideration is resolving the inconsistent use of both styled-components and tailwindcss.
 
 Change Log
-| Date | Version | Description | Author |
-| :--- | :--- | :--- | :--- |
-| 2025-08-16 | 1.1 | Updated external API section to reflect public endpoint usage. | Winston (Architect) |
-| 2025-08-16 | 1.0 | Initial architecture draft. | Winston (Architect) |
+Change	Date	Version	Description	Author
+Created document	2025-08-17	1.0	Initial draft of the Enhancement Architecture.	Winston (Architect)
 
-2. High Level Architecture
-Technical Summary
-This project will be a fullstack application running in a local environment. It uses a classic client-server model with a React frontend communicating via a REST API to a Python backend. The architecture is designed for simplicity and rapid prototyping within a monorepo structure, with a strong emphasis on separating the core AI logic from the API layer to ensure testability at every stage.
+Export to Sheets
+Enhancement Scope and Integration Strategy
+Enhancement Overview
+Enhancement Type: New Feature Addition (Dashboard), Major Feature Modification (API fix, AI improvements), and UI/UX Overhaul ("cozy" feel, light/dark mode).
 
-Platform and Infrastructure Choice
+Scope: To implement a "cozy" and familiar UI with a persistent light/dark mode, add a new Dashboard page, and correct the core data-fetching logic to retrieve all available soccer matches.
 
-Platform: The user's local machine.
+Integration Impact: Significant. The changes will affect global styling, core data handling, and application routing.
 
-Key Services: Local development servers (Vite for frontend, Uvicorn for FastAPI backend).
+Integration Approach
+Code Integration Strategy: The enhancement will be integrated by creating new components (Dashboard.js), new hooks (useTheme.js), and modifying existing components. We will standardize on Tailwind CSS for all new and modified component styling to resolve the inconsistency noted in the "As-Is" analysis.
 
-Deployment: Not applicable for the MVP; this is a local-run-only application.
+API Integration: The fix for data fetching will be made in the existing client-side API call logic within the Home.js page. For the future AI enhancements, a new service module (src/services/aiService.js) will be created to encapsulate this logic, allowing for easier future migration to a dedicated backend if needed.
 
-Repository Structure
+UI Integration: The new Dashboard will be registered as a new route in src/App.js. The theme-switching component will be integrated directly into the existing src/components/Navbar.js.
 
-Structure: Monorepo.
+Compatibility Requirements
+Existing API Compatibility: This enhancement requires no changes to external API contracts; it only alters how the client fetches data.
 
-Monorepo Tool: We will use npm Workspaces, a simple, built-in feature of npm for managing local packages.
+Database Schema Compatibility: Not applicable (client-side application).
 
-High Level Architecture Diagram
+UI/UX Consistency: The core user flow of selecting a match from the home page to view details must remain intact and functional. All new UI elements must adhere to the new centralized theming system.
+
+Performance Impact: Fetching all matches may increase initial load time. The implementation must include a clear loading state to manage user perception. Further optimization (like virtualization or pagination) can be considered a future enhancement if initial performance is not acceptable.
+
+Tech Stack Alignment
+The development of this enhancement will leverage the existing technology stack to ensure seamless integration and maintainability.
+
+Existing Technology Stack
+The following table outlines the current technologies and their role in the enhancement work.
+
+Category	Current Technology	Version	Usage in Enhancement	Notes
+Framework	React	18.2.0	All new components and pages will be built using React.	Core library remains unchanged.
+Routing	React Router DOM	6.22.3	Will be used to add the new /dashboard route.	No changes to the library itself.
+Styling	Tailwind CSS	3.4.1	This will be the standard styling method for all new and modified components.	To be configured for the new theming system.
+Styling	Styled Components	6.1.8	Existing components using this will be maintained. No new components should use this method.	We will not add new Styled Components to avoid increasing technical debt.
+Testing	Testing Library	13.4.0	Will be used to write unit tests for all new components and logic.	The goal is to introduce tests where none existed.
+
+Export to Sheets
+New Technology Additions
+At this stage, no new major libraries or frameworks are proposed. The theme-switching functionality can be built using React's native Context API, and the data-fetching fix is a logic change. This approach minimizes new dependencies, which is a best practice for brownfield enhancements.
+
+Data Models and Schema Changes
+New Data Models
+Match Interface
+Purpose: To define a consistent structure for the soccer match data fetched from the SportsDB API.
+
+Integration: This interface will be used throughout the frontend to handle match data.
+
+Key Attributes:
+
+id: string - Unique identifier for the match.
+
+homeTeam: string - Name of the home team.
+
+awayTeam: string - Name of the away team.
+
+date: string - The date and time of the match.
+
+league: string - The name of the league.
+
+Prediction Interface
+Purpose: To define the structure for the data returned by the AI prediction engine.
+
+Integration: This will be used to display the results to the user.
+
+Key Attributes:
+
+betSuggestion: string - The AI-generated bet suggestion (e.g., "Home team to win").
+
+rationale: string - A short paragraph explaining the reasoning for the suggestion.
+
+riskLevel: 'Low' | 'Medium' | 'High' - The user-selected risk level.
+
+Schema Integration Strategy
+Database Changes Required:
+
+New/Modified Tables: Not applicable. No database changes are required as this is a client-side application.
+
+Backward Compatibility: Not applicable.
+
+Component Architecture
+New Components
+useTheme Hook
+Responsibility: A custom React Hook to manage the application's theme. It will provide the current theme (light or dark) and a function to toggle it.
+
+Integration Points: It will be consumed by the ThemeSwitcher component and any other component that needs to be theme-aware. It will be created in a new src/hooks/ directory.
+
+Technology Stack: React.
+
+ThemeSwitcher Component
+Responsibility: A UI component (likely a button or toggle switch) that allows the user to change the theme. It will use the useTheme hook to perform this action.
+
+Integration Points: This component will be placed inside the existing src/components/Navbar.js component.
+
+Technology Stack: React, Tailwind CSS.
+
+DashboardPage Component
+Responsibility: A new page component that will serve as the main dashboard. Initially, it will contain a basic layout with placeholder sections.
+
+Integration Points: It will be added as a new route in the main router within src/App.js.
+
+Technology Stack: React, Tailwind CSS.
+
+Layout Components (Container, Card)
+Responsibility: To create a more "familiar" and less "naked" feel, we will create a generic Container component for consistent page layout (e.g., max-width and padding). The existing Card component will be enhanced to be fully theme-aware using the new theming system.
+
+Integration Points: The Container will be used in HomePage and DashboardPage. The updated Card will be used on the HomePage to display match listings.
+
+Technology Stack: React, Tailwind CSS.
+
+Component Interaction Diagram
+This diagram shows how the new and existing components will interact.
 
 Code snippet
 
 graph TD
- A[User] --> B{Browser};
- B --> C[Frontend App (React/Vite)];
- C -- API Call --> D[Backend App (Python/FastAPI)];
- D -- Fetches Data --> E[External Sports API];
- D -- AI Analysis --> F[Public Web Data];
-Architectural Patterns
+    subgraph App.js (Router)
+        Navbar --> ThemeSwitcher;
+        subgraph "Current Page"
+            DashboardPage;
+        end
+    end
 
-Overall Pattern: Client-Server: A simple and direct pattern where the frontend client makes requests to a backend server.
+    subgraph Global Theme
+        useTheme_Hook;
+    end
 
-Frontend Pattern: Component-Based UI: Using React to build the interface out of small, reusable, and testable components.
+    ThemeSwitcher -- calls --> useTheme_Hook;
+    DashboardPage -- uses --> Container;
+    DashboardPage -- uses --> Card_Component;
+    Container -- styled by --> useTheme_Hook;
+    Card_Component -- styled by --> useTheme_Hook;
+API Design and Integration
+API Integration Strategy
+API Integration Strategy: A new local REST API endpoint will be created on the backend to handle AI prediction requests from the frontend. This aligns with the original project's technical assumptions.
 
-Backend Pattern: Layered Architecture: The backend is separated into distinct layers (API/Routes, Services/AI Logic, Data Access) to ensure testability.
+Authentication: None required for this enhancement.
 
-3. Tech Stack
-Category	Technology	Version	Purpose	Rationale
-Frontend Language	TypeScript	~5.2.2	Language for frontend code	Provides type safety to prevent common errors.
-Frontend Framework	React	~18.2.0	Library for building the UI	Component-based architecture makes the UI modular and testable.
-Styling	Tailwind CSS	~3.3.3	CSS Framework	Allows for rapid prototyping of a clean UI.
-State Management	React Hooks	~18.2.0	Built-in state management	Sufficient for the MVP's simple needs, avoiding extra libraries.
-Backend Language	Python	~3.11	Language for backend/AI	The industry standard for AI and data analysis.
-Backend Framework	FastAPI	~0.103.1	API Framework	Modern, high-performance, and simple to use.
-Frontend Testing	Vitest	~0.34.4	Testing framework	The native and fastest testing framework for Vite.
-Backend Testing	Pytest	~7.4.2	Testing framework	The standard and powerful testing framework for Python.
-Database	N/A	-	-	The MVP is stateless and does not require a database.
-Deployment	N/A	-	-	The MVP is local-run only and will not be deployed.
+Versioning: Not applicable at this stage.
 
-Export to Sheets
-4. Data Models
-1. Match
+New API Endpoints
+POST /api/predict
+Purpose: To receive a user's selected match and risk level, process it with the AI engine, and return a betting suggestion.
 
-Purpose: To represent a single soccer match fetched from the external sports API.
+Integration: This endpoint will be called by the frontend when a user requests a prediction.
 
-TypeScript Interface:
+Request Body
+JSON
 
-TypeScript
-
-interface Match {
-id: string;
-homeTeam: string;
-awayTeam: string;
-startTime: string; // Stored in ISO 8601 format
+{
+  "matchId": "string",
+  "riskLevel": "Low" | "Medium" | "High"
 }
-2. PredictionResult
+Success Response (200 OK)
+JSON
 
-Purpose: To represent the final prediction generated by the AI.
-
-TypeScript Interface:
-
-TypeScript
-
-interface PredictionResult {
-betSuggestion: string; // e.g., "Liverpool to win", "Over 2.5 goals"
-rationale: string; // The one-sentence explanation
-riskLevel: 'Low' | 'Medium' | 'High';
+{
+  "betSuggestion": "string",
+  "rationale": "string",
+  "riskLevel": "Low" | "Medium" | "High"
 }
-5. API Specification
-YAML
-
-openapi: 3.0.0
-info:
- title: "AI Soccer Betting Advisor API"
- version: "1.0.0"
- description: "API for generating AI-powered soccer match betting predictions."
-servers:
- - url: "http://localhost:8000"
- description: "Local Development Server"
-paths:
- /matches:
- get:
- summary: "Get Upcoming Soccer Matches"
- responses:
- '200':
- description: "A list of available soccer matches."
- content:
- application/json:
- schema:
- type: array
- items:
- $ref: '#/components/schemas/Match'
- /predict:
- post:
- summary: "Generate a Betting Prediction"
- requestBody:
- required: true
- content:
- application/json:
- schema:
- $ref: '#/components/schemas/PredictionRequest'
- responses:
- '200':
- description: "The AI-generated prediction result."
- content:
- application/json:
- schema:
- $ref: '#/components/schemas/PredictionResult'
-components:
- schemas:
- Match:
- type: object
- properties:
- id: { type: string }
- homeTeam: { type: string }
- awayTeam: { type: string }
- startTime: { type: string, format: date-time }
- PredictionRequest:
- type: object
- properties:
- matchId: { type: string }
- riskLevel: { type: string, enum: [Low, Medium, High] }
- PredictionResult:
- type: object
- properties:
- betSuggestion: { type: string }
- rationale: { type: string }
- riskLevel: { type: string, enum: [Low, Medium, High] }
-6. Components
-Backend Components
-
-API Server: Handles HTTP requests and routes them to services.
-
-Prediction Service: Contains the core AI logic for generating predictions.
-
-Match Data Service: Manages communication with the external sports API.
-
-Web Scraper / Analyzer: Gathers unstructured data from the web for AI analysis.
-
-Frontend Components
-
-Match Selector View: Fetches and displays matches, handles user selection of match and risk.
-
-Prediction Result View: Displays the loading state and the final prediction result.
-
-apiClient: A non-visual module that handles all HTTP communication with the backend.
-
-7. External APIs
-TheSportsDB API
-
-Purpose: To fetch a list of upcoming soccer matches.
-
-Documentation: https://www.thesportsdb.com/api.php
-
-Authentication: For the MVP, we will use the public endpoint which does not require an API key. A key may be used in the future for increased reliability.
-
-Rate Limits: The public endpoint has a rate limit that must be handled gracefully.
-
-Key Endpoint: "Next 15 Events by League ID" (e.g., eventsnextleague.php?id=LEAGUE_ID).
-
-8. Core Workflows
-Code snippet
-
-sequenceDiagram
- participant User
- participant Frontend
- participant Backend
- participant PredictionService
- participant ExternalSportsAPI
- participant WebData
-
-
- User->>Frontend: Loads Application
- Frontend->>Backend: GET /matches
- Backend->>ExternalSportsAPI: Fetch upcoming matches
- ExternalSportsAPI-->>Backend: Return match list
- Backend-->>Frontend: Return match list
- Frontend-->>User: Display matches
-
-
- User->>Frontend: Selects Match and Risk Level
- Frontend->>Backend: POST /predict (with matchId, riskLevel)
- Backend->>PredictionService: generate_prediction()
- PredictionService->>WebData: Scrape/analyze match data
- WebData-->>PredictionService: Return analysis data
- PredictionService->>PredictionService: Perform AI calculation
- PredictionService-->>Backend: Return PredictionResult
- Backend-->>Frontend: Return PredictionResult
- Frontend-->>User: Display prediction and rationale
-9. Database Schema
-No database is required for the MVP. The application is designed to be stateless.
-
-10. Frontend Architecture
-Component Organization
+Source Tree Integration
+Existing Project Structure
+The current, relevant project structure is as follows:
 
 Plaintext
 
-frontend/src/
-├── components/ # Small, reusable UI components (e.g., Button.tsx)
-├── features/ # Components related to a specific feature
-│ └── prediction/
-│ ├── MatchSelector.tsx
-│ └── PredictionView.tsx
-├── services/ # For handling API calls
-│ └── apiClient.ts
-└── App.tsx # The main component that manages which view is shown
-State Management & Routing
-
-State: State will be managed locally in components using React's built-in useState hook.
-
-Routing: A routing library is not needed. The app will be a single page that conditionally renders the selection or result view.
-
-11. Backend Architecture
-Route Organization
+src/
+├── assets/
+├── components/
+├── pages/
+├── styles/
+├── App.js
+└── index.js
+New File Organization
+The following diagram shows where the new files and directories (marked with (+)) will be added to the existing structure.
 
 Plaintext
 
-backend/app/
-├── api/
-│ └── prediction_router.py # Defines the /matches and /predict API routes
-├── services/
-│ ├── prediction_service.py # Contains the core AI logic
-│ ├── match_service.py # Handles fetching data from TheSportsDB
-│ └── web_scraper.py # Handles scraping data from the web
-└── main.py # Initializes the FastAPI application
-Key Patterns
+src/
+├── assets/
+├── components/
+│   ├── Card.js             # Will be modified for theming
+│   ├── Container.js        # (+) New layout component
+│   └── ThemeSwitcher.js    # (+) New component for light/dark mode
+├── hooks/                  # (+) New directory for custom hooks
+│   └── useTheme.js         # (+) Hook to manage theme state
+├── pages/
+│   ├── Dashboard.js        # (+) New page component
+│   └── Home.js
+├── services/               # (+) New directory for business logic
+│   └── aiService.js        # (+) Placeholder for future AI logic
+├── styles/
+│   └── global.js
+├── App.js
+└── index.js
+Integration Guidelines
+File Naming: All new components will follow the existing PascalCase.js convention.
 
-Dependency Injection will be used in the API router to keep it decoupled from the service logic, ensuring testability.
+Folder Organization: All new, reusable components will be placed in src/components/. Page-level components will go in src/pages/. Custom hooks will have their own src/hooks/ directory.
 
-12. Unified Project Structure
-Plaintext
+Import/Export Patterns: To maintain clean code, imports should use absolute paths from the src directory where possible (e.g., import Component from 'components/Component').
 
-ai-soccer-advisor/
-├── apps/
-│ ├── frontend/
-│ │ ├── public/
-│ │ ├── src/
-│ │ │ ├── components/
-│ │ │ ├── features/
-│ │ │ │ └── prediction/
-│ │ │ ├── services/
-│ │ │ └── App.tsx
-│ │ └── package.json
-│ └── backend/
-│ ├── app/
-│ │ ├── api/
-│ │ ├── services/
-│ │ └── main.py
-│ └── requirements.txt
-├── package.json # Root package.json with workspaces
-└── README.md
-13. Development Workflow
-Prerequisites
+Infrastructure and Deployment Integration
+Existing Infrastructure
+Current Deployment: No automated deployment process is defined in the repository. It is assumed to be a manual deployment of the static build (npm run build) to a hosting provider.
 
-Node.js: ~18.17.0 or higher
+Infrastructure Tools: None identified.
 
-Python: ~3.11
+Environments: No distinct development, staging, or production environments are formally defined in the project.
 
-Initial Setup
-Run this command from the project root to install all dependencies:
+Enhancement Deployment Strategy
+Deployment Approach: The enhancement will follow the existing manual deployment process. The developer will run npm run build to create an updated production build and then manually upload the contents of the /build directory to the hosting service.
 
-Bash
+Infrastructure Changes: No new infrastructure is required for the UI and data-fetching enhancements. Note: If the AI Advisor feature evolves into a backend service, it will require new infrastructure (e.g., a server or serverless functions), which would need to be planned separately.
 
-npm install
-Development Commands
+Pipeline Integration: Not applicable, as no CI/CD pipeline currently exists.
 
-To start both servers: npm run dev
+Rollback Strategy
+Rollback Method: Rollback will be a manual process. It requires redeploying the previously saved build directory to the hosting provider. It is critical to save the last working build artifact before deploying a new version.
 
-To start only the frontend: npm run dev:frontend
+Risk Mitigation: The initial release of the Dashboard page can be managed via a feature flag in the code to easily hide it from the Navbar if any issues arise.
 
-To start only the backend: npm run dev:backend
+Monitoring: No existing monitoring tools have been identified.
 
-Environment Configuration
-Create a file at apps/backend/.env with your Google Gemini API key:
+Coding Standards and Conventions
+Existing Standards Compliance
+Code Style: The project adheres to the default code style and linting rules provided by Create React App (using ESLint). All new code will follow these established rules.
 
-Bash
+Testing Patterns: No existing testing patterns were identified in the codebase. New standards will be established for this enhancement.
 
-GEMINI_API_KEY="YOUR_GEMINI_API_KEY"
+Documentation Style: No formal code documentation style (e.g., JSDoc) was identified.
+
+Enhancement-Specific Standards
+Component Unit Testing: All new and modified functional components must have a corresponding *.test.js file. Tests will be written using the React Testing Library to verify correct rendering and user interactions.
+
+Critical Integration Rules
+To ensure a smooth integration, the following mandatory rules will be followed:
+
+Styling Consistency: All new and modified components MUST be styled using Tailwind CSS utility classes. Do not introduce any new styled-components.
+
+Error Handling: All external API calls must include try/catch blocks to handle network errors gracefully and update the UI to reflect loading or error states.
+
+API Logic Encapsulation: The logic for fetching data from the external SportsDB API must be encapsulated in a dedicated service or custom hook and not be mixed directly into UI component files.
+
+Logging: Use console.error for logging caught errors. console.log should only be used for debugging during development and must be removed before a task is considered complete.
+
+Testing Strategy
+Integration with Existing Tests
+Existing Test Framework: The project has React Testing Library installed and ready for use.
+
+Test Organization: There are currently no test files in the project. We will establish a new convention of creating *.test.js files alongside their corresponding component files (e.g., Navbar.test.js next to Navbar.js).
+
+Coverage Requirements: The current test coverage is 0%.
+
+New Testing Requirements
+Unit Tests for New Components
+Framework: React Testing Library.
+
+Location: Test files will be co-located with the component files.
+
+Coverage Target: All new code, including hooks and components, should aim for a minimum of 80% unit test coverage.
+
+Integration with Existing: A test script will be added to package.json to execute all new tests as part of the development workflow.
+
+Integration Tests
+Scope: Integration tests will focus on verifying interactions between components. For example, testing that clicking the ThemeSwitcher component correctly applies the new theme to the DashboardPage.
+
+New Feature Testing: We will test that the new /dashboard route renders the DashboardPage component correctly.
+
+Regression Testing
+Existing Feature Verification: The primary goal of regression testing is to ensure existing functionality is not broken by the enhancement.
+
+Automated Regression Suite: The new unit and integration tests will serve as our initial automated regression suite.
+
+Manual Testing Requirements: Before completing the project, a manual check will be performed to verify:
+
+The home page successfully loads all matches from the API.
+
+The existing search functionality still filters the full list of matches correctly.
+
+Users can still navigate from the home page to the match details page.
+

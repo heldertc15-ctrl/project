@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent, act } from '@testing-library/react';
 import { MatchSelector } from './MatchSelector';
 import { apiClient, Match } from '../../services/apiClient';
 
@@ -98,7 +98,9 @@ describe('MatchSelector', () => {
 
     // Click on the first match
     const firstMatch = screen.getByText('Liverpool').closest('div');
-    fireEvent.click(firstMatch!);
+    act(() => {
+      fireEvent.click(firstMatch!);
+    });
 
     expect(mockOnMatchSelect).toHaveBeenCalledWith(mockMatches[0]);
     expect(screen.getByText('Selected')).toBeInTheDocument();
@@ -116,7 +118,9 @@ describe('MatchSelector', () => {
       expect(screen.getByText('Try Again')).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByText('Try Again'));
+    act(() => {
+      fireEvent.click(screen.getByText('Try Again'));
+    });
 
     await waitFor(() => {
       expect(screen.getByText('Liverpool')).toBeInTheDocument();
@@ -180,7 +184,9 @@ describe('MatchSelector', () => {
 
       // Select a match
       const firstMatch = screen.getByText('Liverpool').closest('div');
-      fireEvent.click(firstMatch!);
+      act(() => {
+        fireEvent.click(firstMatch!);
+      });
 
       // Should show risk level selection
       expect(screen.getByText('Choose Risk Level')).toBeInTheDocument();
@@ -198,7 +204,9 @@ describe('MatchSelector', () => {
 
       // Select a match
       const firstMatch = screen.getByText('Liverpool').closest('div');
-      fireEvent.click(firstMatch!);
+      act(() => {
+        fireEvent.click(firstMatch!);
+      });
 
       // Button should be disabled initially
       const getPredictionButton = screen.getByText('Get Prediction');
@@ -206,7 +214,9 @@ describe('MatchSelector', () => {
 
       // Select risk level
       const lowRiskOption = screen.getByDisplayValue('Low');
-      fireEvent.click(lowRiskOption);
+      act(() => {
+        fireEvent.click(lowRiskOption);
+      });
 
       // Button should now be enabled
       expect(getPredictionButton).toBeEnabled();
@@ -221,15 +231,21 @@ describe('MatchSelector', () => {
 
       // Select a match
       const firstMatch = screen.getByText('Liverpool').closest('div');
-      fireEvent.click(firstMatch!);
+      act(() => {
+        fireEvent.click(firstMatch!);
+      });
 
       // Select risk level
       const mediumRiskOption = screen.getByDisplayValue('Medium');
-      fireEvent.click(mediumRiskOption);
+      act(() => {
+        fireEvent.click(mediumRiskOption);
+      });
 
       // Click Get Prediction button
       const getPredictionButton = screen.getByText('Get Prediction');
-      fireEvent.click(getPredictionButton);
+      act(() => {
+        fireEvent.click(getPredictionButton);
+      });
 
       expect(mockOnPredictionRequest).toHaveBeenCalledWith('1', 'Medium');
     });
@@ -247,14 +263,20 @@ describe('MatchSelector', () => {
 
       // Select match and risk level
       const firstMatch = screen.getByText('Liverpool').closest('div');
-      fireEvent.click(firstMatch!);
+      act(() => {
+        fireEvent.click(firstMatch!);
+      });
       
       const highRiskOption = screen.getByDisplayValue('High');
-      fireEvent.click(highRiskOption);
+      act(() => {
+        fireEvent.click(highRiskOption);
+      });
 
       // Click Get Prediction button
       const getPredictionButton = screen.getByText('Get Prediction');
-      fireEvent.click(getPredictionButton);
+      act(() => {
+        fireEvent.click(getPredictionButton);
+      });
 
       // Should show loading state
       expect(screen.getByText('Getting Prediction...')).toBeInTheDocument();
@@ -274,14 +296,20 @@ describe('MatchSelector', () => {
 
       // Select match and risk level
       const firstMatch = screen.getByText('Liverpool').closest('div');
-      fireEvent.click(firstMatch!);
+      act(() => {
+        fireEvent.click(firstMatch!);
+      });
       
       const lowRiskOption = screen.getByDisplayValue('Low');
-      fireEvent.click(lowRiskOption);
+      act(() => {
+        fireEvent.click(lowRiskOption);
+      });
 
       // Click Get Prediction button
       const getPredictionButton = screen.getByText('Get Prediction');
-      fireEvent.click(getPredictionButton);
+      act(() => {
+        fireEvent.click(getPredictionButton);
+      });
 
       // Risk level options should be disabled
       expect(screen.getByDisplayValue('Low')).toBeDisabled();
@@ -300,14 +328,20 @@ describe('MatchSelector', () => {
 
       // Select match and risk level
       const firstMatch = screen.getByText('Liverpool').closest('div');
-      fireEvent.click(firstMatch!);
+      act(() => {
+        fireEvent.click(firstMatch!);
+      });
       
       const lowRiskOption = screen.getByDisplayValue('Low');
-      fireEvent.click(lowRiskOption);
+      act(() => {
+        fireEvent.click(lowRiskOption);
+      });
 
       // Click Get Prediction button
       const getPredictionButton = screen.getByText('Get Prediction');
-      fireEvent.click(getPredictionButton);
+      act(() => {
+        fireEvent.click(getPredictionButton);
+      });
 
       // Wait for the error to be handled and loading state to end
       await waitFor(() => {
@@ -327,19 +361,138 @@ describe('MatchSelector', () => {
 
       // Select match and risk level
       const firstMatch = screen.getByText('Liverpool').closest('div');
-      fireEvent.click(firstMatch!);
+      act(() => {
+        fireEvent.click(firstMatch!);
+      });
       
       const lowRiskOption = screen.getByDisplayValue('Low');
-      fireEvent.click(lowRiskOption);
+      act(() => {
+        fireEvent.click(lowRiskOption);
+      });
 
       // Click Get Prediction button multiple times rapidly
       const getPredictionButton = screen.getByText('Get Prediction');
-      fireEvent.click(getPredictionButton);
-      fireEvent.click(getPredictionButton);
-      fireEvent.click(getPredictionButton);
+      act(() => {
+        fireEvent.click(getPredictionButton);
+      });
+      
+      // Try clicking again while first request is in progress - should be ignored
+      act(() => {
+        fireEvent.click(getPredictionButton);
+        fireEvent.click(getPredictionButton);
+      });
 
       // Should only be called once
       expect(mockOnPredictionRequest).toHaveBeenCalledTimes(1);
+    });
+
+    describe('Large Dataset Handling', () => {
+      it('should handle rendering large numbers of matches efficiently', async () => {
+        // Create a large dataset (50 matches) to test performance
+        const largeMatchDataset: Match[] = Array.from({ length: 50 }, (_, i) => ({
+          id: `match-${i}`,
+          homeTeam: `Team A${i}`,
+          awayTeam: `Team B${i}`,
+          startTime: '2025-08-20T15:00:00Z'
+        }));
+
+        vi.mocked(apiClient.getMatches).mockResolvedValue(largeMatchDataset);
+
+        const startTime = performance.now();
+        render(<MatchSelector onMatchSelect={mockOnMatchSelect} />);
+
+        await waitFor(() => {
+          expect(screen.getByText('Team A0')).toBeInTheDocument();
+        });
+
+        const endTime = performance.now();
+        const renderTime = endTime - startTime;
+
+        // Should render large dataset within reasonable time (less than 1 second)
+        expect(renderTime).toBeLessThan(1000);
+
+        // Should render all matches
+        expect(screen.getByText('Team A0')).toBeInTheDocument();
+        expect(screen.getByText('Team A49')).toBeInTheDocument();
+        expect(screen.getByText('Team B0')).toBeInTheDocument();
+        expect(screen.getByText('Team B49')).toBeInTheDocument();
+      });
+
+      it('should maintain functionality with large datasets', async () => {
+        // Create a large dataset
+        const largeMatchDataset: Match[] = Array.from({ length: 100 }, (_, i) => ({
+          id: `match-${i}`,
+          homeTeam: `Team A${i}`,
+          awayTeam: `Team B${i}`,
+          startTime: '2025-08-20T15:00:00Z'
+        }));
+
+        vi.mocked(apiClient.getMatches).mockResolvedValue(largeMatchDataset);
+
+        render(<MatchSelector onMatchSelect={mockOnMatchSelect} onPredictionRequest={mockOnPredictionRequest} />);
+
+        await waitFor(() => {
+          expect(screen.getByText('Team A0')).toBeInTheDocument();
+        });
+
+        // Should be able to select a match from the large dataset
+        const middleMatch = screen.getByText('Team A50').closest('div');
+        act(() => {
+          fireEvent.click(middleMatch!);
+        });
+
+        expect(mockOnMatchSelect).toHaveBeenCalledWith(largeMatchDataset[50]);
+        expect(screen.getByText('Match selected: Team A50 vs Team B50')).toBeInTheDocument();
+
+        // Should be able to complete the prediction workflow
+        const lowRiskOption = screen.getByDisplayValue('Low');
+        act(() => {
+          fireEvent.click(lowRiskOption);
+        });
+
+        const getPredictionButton = screen.getByText('Get Prediction');
+        act(() => {
+          fireEvent.click(getPredictionButton);
+        });
+
+        expect(mockOnPredictionRequest).toHaveBeenCalledWith('match-50', 'Low');
+      });
+
+      it('should handle scrolling and accessibility with large datasets', async () => {
+        // Create a very large dataset
+        const veryLargeMatchDataset: Match[] = Array.from({ length: 200 }, (_, i) => ({
+          id: `match-${i}`,
+          homeTeam: `Team A${i}`,
+          awayTeam: `Team B${i}`,
+          startTime: '2025-08-20T15:00:00Z'
+        }));
+
+        vi.mocked(apiClient.getMatches).mockResolvedValue(veryLargeMatchDataset);
+
+        render(<MatchSelector onMatchSelect={mockOnMatchSelect} />);
+
+        await waitFor(() => {
+          expect(screen.getByText('Team A0')).toBeInTheDocument();
+        });
+
+        // Check that keyboard navigation works for matches
+        const matchElements = screen.getAllByRole('button');
+        const firstMatchButton = matchElements.find(el => 
+          el.getAttribute('aria-label')?.includes('Team A0')
+        );
+        expect(firstMatchButton).toHaveAttribute('tabIndex', '0');
+        expect(firstMatchButton).toHaveAttribute('role', 'button');
+
+        // Test keyboard interaction
+        act(() => {
+          fireEvent.keyDown(firstMatchButton!, { key: 'Enter' });
+        });
+        expect(mockOnMatchSelect).toHaveBeenCalledWith(veryLargeMatchDataset[0]);
+
+        // Check that all matches have proper ARIA labels
+        const matchWithAriaLabel = screen.getByLabelText('Select match between Team A0 and Team B0');
+        expect(matchWithAriaLabel).toBeInTheDocument();
+      });
     });
   });
 });

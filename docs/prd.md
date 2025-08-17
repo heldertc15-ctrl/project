@@ -1,160 +1,148 @@
-A I Soccer Betting Advisor: Product Requirements Document (PRD) v1.0
+project Brownfield Enhancement PRD
+Intro Project Analysis and Context
+Analysis Source: A document-project task was performed, and the output is now stored in docs/brownfield-architecture.md.
 
-1\. Goals and Background Context
+Current Project State: The project is a client-side React SPA that functions as an AI-powered sports betting advisor. It currently fetches a limited number of matches from the SportsDB API and allows users to select a match and risk level to get a prediction.
 
+Enhancement Type: This work involves a New Feature Addition (Dashboard), a Major Feature Modification (AI integration improvements, full match list), and a UI/UX Overhaul ("cozy" feel, light/dark mode).
+
+Impact Assessment: The scope of these changes represents a Significant Impact, as it will involve creating new core views (Dashboard), implementing a site-wide theming system, and overhauling the core data-fetching logic.
+
+Goals and Background Context
 Goals
+Overhaul the UI/UX to create a more "cozy" and familiar user experience.
 
+Implement a user-selectable light and dark mode across the application.
 
+Introduce a new Dashboard view.
 
-Create a functional, local-run prototype to validate the core AI's ability to generate optimal, risk-adjusted betting suggestions for soccer matches.
+Correct the core data-fetching logic to display all available soccer matches from the SportsDB API.
 
-
-
-The AI's predictions must be demonstrably more accurate than random chance to provide real value.
-
-
-
-Empower beginner bettors with a simple, data-driven tool that increases their confidence and improves their success rate.
-
-
+Improve the integration and functionality of the AI-powered betting advisor.
 
 Background Context
+The current application serves as a functional proof-of-concept for an AI-powered sports betting advisor. However, its user experience is minimal, feeling "naked" and lacking user-friendly features. Furthermore, a critical bug in its data-fetching logic prevents it from displaying a full list of matches, limiting its core utility.
 
-This project addresses a gap in the sports betting market for the "cautious newcomer." These users are interested in betting but are often deterred by the complexity of data analysis or the opacity of paid tipster services. This application will serve as a trusted advisor, translating complex, real-time web data into a single, actionable betting suggestion with a clear rationale. The MVP is a local-run application focused entirely on proving the viability of this core AI-driven feature.
-
-
+This enhancement aims to evolve the application into a more robust and engaging tool by fixing the data-fetching issue, introducing a new personalized dashboard, and implementing modern UI features like a light/dark mode to create a more comfortable and "familiar" user experience.
 
 Change Log
+Change	Date	Version	Description	Author
+Created document	2025-08-17	1.0	Initial draft of the Brownfield PRD.	John (PM)
 
-| Date | Version | Description | Author |
+Export to Sheets
+Requirements
+Functional
+FR1: The system shall fetch and display all available soccer matches from the SportsDB API, removing the current limitation of only showing three.
 
-| :--- | :--- | :--- | :--- |
+FR2: The application must include a new, distinct Dashboard page accessible from the main navigation.
 
-| 2025-08-16 | 1.0 | Initial PRD draft created. | John (PM) |
+FR3: A theme-switching mechanism (e.g., a toggle button) shall be implemented that allows users to select between a Light Mode and a Dark Mode. The chosen theme must persist for the user across sessions.
 
+FR4: The AI betting advisor's integration point shall be reviewed and prepared for future enhancements.
 
+Non-Functional
+NFR1: The overall UI design shall be updated to feel more "familiar" and less "naked," using common layout patterns and providing a richer visual experience.
 
-2\. Requirements
+NFR2: The application must maintain a responsive layout, ensuring usability on common desktop, tablet, and mobile screen sizes.
 
-Functional Requirements
+NFR3: The implementation of new features should not negatively impact the existing application's load time or performance.
 
+NFR4: The styling for new components must be consistent with the chosen primary styling system (either Tailwind CSS or Styled Components) to reduce technical debt.
 
+User Interface Enhancement Goals
+Integration with Existing UI
+The primary goal is to create a more "familiar" and cohesive user experience. The project currently uses a mix of styled-components and tailwindcss. To reduce technical debt and ensure consistency, all new development for this enhancement will standardize on Tailwind CSS for layout and component styling. Global theme variables (colors, fonts, spacing for light/dark modes) will be defined in a central location (src/styles/theme.js) and consumed by Tailwind's configuration, ensuring a single source of truth for all styling.
 
-FR1: The system must fetch a list of upcoming soccer matches from a free sports API.
+Modified/New Screens and Views
+Modified - Home Page: The layout will be updated to feel less "naked." This may include adding container elements, a clearer grid structure, and potentially sections for featured matches or user-specific content. It will be the primary showcase for the new "cozy" theme.
 
+Modified - Match Details Page: This page will be updated to adopt the new global theme for full consistency with the rest of the application.
 
+New - Dashboard Page: A new page will be created to serve as the user's main hub.
 
-FR2: The system must display the list of matches to the user, allowing them to select one.
+UI Consistency Requirements
+All new and modified components MUST use the centralized theme variables for colors, fonts, and spacing to ensure the light/dark mode switch works globally.
 
+While the aesthetic will be updated, the core interaction patterns (e.g., clicking a match card to see details) should remain intuitive and consistent with user expectations.
 
+The application must maintain its responsive behavior on mobile, tablet, and desktop screens.
 
-FR3: After a match is selected, the system must present the user with three risk level options: Low, Medium, and High.
+Technical Constraints and Integration Requirements
+Existing Technology Stack
+The existing technology stack, as identified in the architecture analysis, will be adhered to.
 
+Languages: JavaScript
 
+Frameworks: React (v18.2.0), Tailwind CSS, Styled-Components
 
-FR4: Upon user selection of a match and a risk level, the system must initiate an AI analysis process.
+External Dependencies: react-router-dom for routing.
 
+Integration Approach
+Database Integration Strategy: Not applicable. The application is currently client-side only and does not have its own database.
 
+API Integration Strategy: The application will continue to fetch data directly from the external SportsDB API. The bug in the data-fetching logic will be corrected. Future AI-related features will require a new integration strategy, to be defined in the architecture phase.
 
-FR5: The AI engine must analyze publicly available web data to determine an optimal bet type for the given match and risk profile.
+Frontend Integration Strategy: The new Dashboard page will be added to the existing react-router-dom configuration. The light/dark mode will be implemented using a global theme context that modifies CSS variables consumed by Tailwind CSS.
 
+Testing Integration Strategy: New unit tests will be written for all new components and logic using the existing Testing Library setup.
 
+Code Organization and Standards
+File Structure Approach: New components and pages will be created in their respective directories (src/components/, src/pages/) following the existing structure. A new src/hooks/ directory will be created for custom hooks (e.g., useTheme).
 
-FR6: The AI engine must generate a concise, single-sentence rationale explaining its betting suggestion.
+Styling Standards: To resolve the current inconsistency, all new components will be styled using Tailwind CSS.
 
+Epic and Story Structure
+Epic 1: UI Modernization and Core Functionality Enhancement
+Epic Goal: To transform the application's user experience by implementing a modern, "familiar" UI with light/dark modes, introduce a new dashboard, and correct the core data-fetching functionality to ensure the application is both fully functional and visually engaging.
 
+Story 2.1: Establish Theming Foundation
+As a user, I want the application to have a foundational theming system, so that a consistent look and feel can be applied across the entire site.
 
-FR7: The system must display the final bet suggestion and its rationale to the user.
+Acceptance Criteria:
 
+A central theme configuration file is created to manage colors, fonts, and spacing for both a light and a dark mode.
 
+The application's global styles are updated to use these theme variables.
 
-Non-Functional Requirements
+Existing pages (Home, MatchDetails) are refactored to correctly apply the new theme variables without breaking functionality.
 
+The default theme is set to light mode.
 
+Story 2.2: Implement Theme Switching
+As a user, I want to be able to switch between light and dark modes, so that I can use the application comfortably in different lighting conditions.
 
-NFR1: The entire application must be able to run on a user's local machine.
+Acceptance Criteria:
 
+A theme-switching toggle/button is present in the Navbar.
 
+Clicking the toggle switches the entire application's color scheme between the defined light and dark themes.
 
-NFR2: The AI analysis process should complete and display results in under 15 seconds.
+The user's theme preference is saved and persists across browser sessions (e.g., using localStorage).
 
+All interactive elements (buttons, links, search bars) are styled correctly and legibly in both modes.
 
+Story 2.3: Correct API Data Fetching
+As a user, I want to see all available soccer matches, so that I can get a complete overview of all betting opportunities.
 
-NFR3: The user interface must be intuitive and designed for beginners.
+Acceptance Criteria:
 
+The data-fetching logic on the Home page is modified to retrieve all matches from the SportsDB API instead of a limited number.
 
+The Home page correctly displays the full list of matches returned by the API.
 
-NFR4: All technologies and APIs used must be free of charge for the prototype.
+The application handles the loading state gracefully while the full list of matches is being fetched.
 
+Existing functionality, such as searching and navigating to match details, continues to work correctly with the full list.
 
+Story 2.4: Create the Dashboard Page
+As a user, I want to have a dashboard page, so that I have a central place for key information and actions.
 
-3\. User Interface Design Goals
+Acceptance Criteria:
 
-Overall UX Vision
+A new, blank Dashboard page is created at the /dashboard route.
 
-The UX vision is to create an uncluttered, single-purpose interface that guides the beginner user through the process effortlessly, prioritizing clarity and building user trust.
+The Dashboard page is accessible via a link in the Navbar.
 
+The page correctly adopts the application's global styling and theming (light/dark mode).
 
-
-Key Interaction Paradigms
-
-The primary interaction is a three-step linear workflow: 1. Select Match -> 2. Select Risk -> 3. Receive Prediction.
-
-
-
-Core Screens and Views
-
-
-
-Match Selection View
-
-
-
-Risk Selection View
-
-
-
-Prediction Display View
-
-
-
-4\. Technical Assumptions
-
-Repository Structure: Monorepo
-
-Service Architecture: The backend will be a single, monolithic service.Testing Requirements: Unit Tests Only for the MVP.Backend Technology: Python
-
-Frontend Technology: JavaScript library (e.g., React)
-
-API Style: Local REST API
-
-
-
-5\. Epic 1: Core Prediction MVP
-
-Goal: To deliver a functional, local-run application that allows a user to select a soccer match and risk level to receive a single, AI-generated betting prediction with a supporting rationale.
-
-
-
-Stories:
-
-
-
-1.1: Project Foundation and Setup: Create a basic local folder structure with runnable "Hello World" starter applications for both the frontend and backend.
-
-
-
-1.2: Fetch and Display Matches: Implement the backend endpoint and frontend UI to display a selectable list of upcoming soccer matches from a free sports API.
-
-
-
-1.3: User Selection and Request: Implement the UI for a user to select a match, choose a risk level, and trigger the prediction request, showing a loading state.
-
-
-
-1.4: AI Prediction Engine: Implement the backend endpoint that receives the request, performs the AI analysis of web data, and returns a bet suggestion and rationale.
-
-
-
-1.5: Display Prediction Result: Implement the UI to display the final prediction and rationale received from the backend and allow the user to restart the process.
-
+The page includes placeholder sections for future content (e.g., "Featured Match", "My Predictions").

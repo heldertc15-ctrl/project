@@ -52,7 +52,9 @@ export function MatchSelector({ onMatchSelect, onPredictionRequest }: MatchSelec
     try {
       await onPredictionRequest?.(selectedMatch.id, selectedRiskLevel);
     } catch (error) {
-      console.error('Prediction request failed:', error);
+      // Log error for debugging but don't show to user as onPredictionRequest handles UI feedback
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      console.error('Prediction request failed:', { error: errorMessage, matchId: selectedMatch.id, riskLevel: selectedRiskLevel });
     } finally {
       setIsRequestingPrediction(false);
     }
@@ -84,10 +86,10 @@ export function MatchSelector({ onMatchSelect, onPredictionRequest }: MatchSelec
   if (loading) {
     return (
       <div className="w-full max-w-4xl mx-auto p-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">Select a Match</h2>
+        <h2 className="text-2xl font-bold text-theme-text mb-6">Select a Match</h2>
         <div className="flex items-center justify-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-          <span className="ml-3 text-gray-600">Loading matches...</span>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-theme-primary"></div>
+          <span className="ml-3 text-theme-text-secondary">Loading matches...</span>
         </div>
       </div>
     );
@@ -96,15 +98,15 @@ export function MatchSelector({ onMatchSelect, onPredictionRequest }: MatchSelec
   if (error) {
     return (
       <div className="w-full max-w-4xl mx-auto p-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">Select a Match</h2>
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+        <h2 className="text-2xl font-bold text-theme-text mb-6">Select a Match</h2>
+        <div className="bg-theme-error-bg border border-theme-error-border rounded-lg p-4">
           <div className="flex items-center">
-            <div className="text-red-600 text-sm font-medium">Error loading matches</div>
+            <div className="text-theme-error-text text-sm font-medium">Error loading matches</div>
           </div>
-          <div className="text-red-600 text-sm mt-1">{error}</div>
+          <div className="text-theme-error-text text-sm mt-1">{error}</div>
           <button
             onClick={fetchMatches}
-            className="mt-3 bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-red-700 transition-colors"
+            className="mt-3 bg-theme-error text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-theme-error transition-colors"
           >
             Try Again
           </button>
@@ -116,12 +118,12 @@ export function MatchSelector({ onMatchSelect, onPredictionRequest }: MatchSelec
   if (matches.length === 0) {
     return (
       <div className="w-full max-w-4xl mx-auto p-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">Select a Match</h2>
+        <h2 className="text-2xl font-bold text-theme-text mb-6">Select a Match</h2>
         <div className="text-center py-12">
-          <div className="text-gray-500 text-lg">No upcoming matches available</div>
+          <div className="text-theme-text-muted text-lg">No upcoming matches available</div>
           <button
             onClick={fetchMatches}
-            className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors"
+            className="mt-4 bg-theme-primary text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-theme-primary-hover transition-colors"
           >
             Refresh
           </button>
@@ -132,7 +134,7 @@ export function MatchSelector({ onMatchSelect, onPredictionRequest }: MatchSelec
 
   return (
     <div className="w-full max-w-4xl mx-auto p-6">
-      <h2 className="text-2xl font-bold text-gray-900 mb-6">Select a Match</h2>
+      <h2 className="text-2xl font-bold text-theme-text mb-6">Select a Match</h2>
       
       <div className="space-y-3">
         {matches.map((match) => (
@@ -150,40 +152,40 @@ export function MatchSelector({ onMatchSelect, onPredictionRequest }: MatchSelec
             aria-selected={selectedMatch?.id === match.id}
             aria-label={`Select match between ${match.homeTeam} and ${match.awayTeam}`}
             className={`
-              relative cursor-pointer rounded-lg border-2 p-4 transition-all hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
+              relative cursor-pointer rounded-lg border-2 p-4 transition-all hover:shadow-md focus:outline-none focus:ring-2 focus:ring-theme-primary focus:ring-offset-2
               ${selectedMatch?.id === match.id
-                ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-200'
-                : 'border-gray-200 bg-white hover:border-gray-300'
+                ? 'border-theme-primary bg-theme-info-bg ring-2 ring-theme-info-border'
+                : 'border-theme-border bg-theme-surface hover:border-theme-border-secondary'
               }
             `}
           >
             <div className="flex items-center justify-between">
               <div className="flex-1">
                 <div className="flex items-center space-x-4">
-                  <div className="text-lg font-semibold text-gray-900">
+                  <div className="text-lg font-semibold text-theme-text">
                     {match.homeTeam}
                   </div>
-                  <div className="text-gray-500 font-medium">vs</div>
-                  <div className="text-lg font-semibold text-gray-900">
+                  <div className="text-theme-text-muted font-medium">vs</div>
+                  <div className="text-lg font-semibold text-theme-text">
                     {match.awayTeam}
                   </div>
                 </div>
-                <div className="mt-2 text-sm text-gray-600">
+                <div className="mt-2 text-sm text-theme-text-secondary">
                   {formatDateTime(match.startTime)}
                 </div>
               </div>
               
               <div className="flex items-center">
                 {selectedMatch?.id === match.id && (
-                  <div className="text-blue-600 text-sm font-medium mr-3">
+                  <div className="text-theme-primary text-sm font-medium mr-3">
                     Selected
                   </div>
                 )}
                 <div className={`
                   w-4 h-4 rounded-full border-2 transition-all
                   ${selectedMatch?.id === match.id
-                    ? 'border-blue-500 bg-blue-500'
-                    : 'border-gray-300'
+                    ? 'border-theme-primary bg-theme-primary'
+                    : 'border-theme-border'
                   }
                 `}>
                   {selectedMatch?.id === match.id && (
@@ -198,17 +200,17 @@ export function MatchSelector({ onMatchSelect, onPredictionRequest }: MatchSelec
 
       {selectedMatch && (
         <div className="mt-6 space-y-6">
-          <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-            <div className="text-green-800 text-sm font-medium">
+          <div className="p-4 bg-theme-success-bg border border-theme-success-border rounded-lg">
+            <div className="text-theme-success-text text-sm font-medium">
               Match selected: {selectedMatch.homeTeam} vs {selectedMatch.awayTeam}
             </div>
-            <div className="text-green-600 text-sm mt-1">
+            <div className="text-theme-success-text text-sm mt-1">
               Now choose your risk level and get your prediction
             </div>
           </div>
 
-          <div className="p-6 bg-white border border-gray-200 rounded-lg">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Choose Risk Level</h3>
+          <div className="p-6 bg-theme-surface border border-theme-border rounded-lg">
+            <h3 className="text-lg font-semibold text-theme-text mb-4">Choose Risk Level</h3>
             <div className="space-y-3">
               {(['Low', 'Medium', 'High'] as RiskLevel[]).map((riskLevel) => (
                 <label
@@ -216,8 +218,8 @@ export function MatchSelector({ onMatchSelect, onPredictionRequest }: MatchSelec
                   className={`
                     flex items-center p-4 rounded-lg border-2 cursor-pointer transition-all
                     ${selectedRiskLevel === riskLevel
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-gray-200 hover:border-gray-300'
+                      ? 'border-theme-primary bg-theme-info-bg'
+                      : 'border-theme-border hover:border-theme-border-secondary'
                     }
                     ${isRequestingPrediction ? 'opacity-50 cursor-not-allowed' : ''}
                   `}
@@ -229,11 +231,11 @@ export function MatchSelector({ onMatchSelect, onPredictionRequest }: MatchSelec
                     checked={selectedRiskLevel === riskLevel}
                     onChange={() => handleRiskLevelSelect(riskLevel)}
                     disabled={isRequestingPrediction}
-                    className="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                    className="h-4 w-4 text-theme-primary border-theme-border focus:ring-theme-primary"
                   />
                   <div className="ml-3">
-                    <div className="text-sm font-medium text-gray-900">{riskLevel} Risk</div>
-                    <div className="text-sm text-gray-600">
+                    <div className="text-sm font-medium text-theme-text">{riskLevel} Risk</div>
+                    <div className="text-sm text-theme-text-secondary">
                       {riskLevel === 'Low' && 'Conservative predictions with safer bets'}
                       {riskLevel === 'Medium' && 'Balanced approach with moderate risk'}
                       {riskLevel === 'High' && 'Aggressive predictions with higher potential returns'}
@@ -249,8 +251,8 @@ export function MatchSelector({ onMatchSelect, onPredictionRequest }: MatchSelec
               className={`
                 mt-6 w-full px-6 py-3 rounded-lg font-medium transition-all flex items-center justify-center
                 ${isFormValid
-                  ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  ? 'bg-theme-primary hover:bg-theme-primary-hover text-white'
+                  : 'bg-theme-secondary text-theme-text-muted cursor-not-allowed'
                 }
               `}
             >
